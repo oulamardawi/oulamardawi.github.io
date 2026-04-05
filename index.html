@@ -6,20 +6,20 @@
   <title>Lives Lost in Gaza</title>
   <style>
     :root {
-      --bg: #0f0f10;
-      --panel: #171719;
-      --text: #f2f2f2;
-      --muted: #bdbdbd;
-      --line: #2b2b2f;
-      --child: #cfcfcf;
-      --woman: #9f9f9f;
-      --man: #6f6f6f;
-      --unknown: #4b4b4b;
+      --bg: #0c0c0d;
+      --panel: #151517;
+      --text: #f4f4f4;
+      --muted: #b8b8bb;
+      --line: #27272b;
+      --child: #d7d7d7;
+      --woman: #a7a7a7;
+      --man: #757575;
+      --unknown: #4d4d4d;
       --highlight: #ffffff;
-      --accent: #d8d8d8;
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Inter, Arial, sans-serif;
@@ -30,7 +30,7 @@
     .page {
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-rows: auto auto auto 1fr auto;
       gap: 14px;
       padding: 18px;
       max-width: 1500px;
@@ -47,7 +47,7 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(1.8rem, 2.7vw, 3rem);
+      font-size: clamp(1.8rem, 2.8vw, 3rem);
       letter-spacing: -0.03em;
     }
 
@@ -55,8 +55,14 @@
       margin-top: 8px;
       color: var(--muted);
       line-height: 1.45;
-      max-width: 760px;
+      max-width: 820px;
       font-size: 0.98rem;
+    }
+
+    .cards {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .count-card {
@@ -74,14 +80,14 @@
     }
 
     .count-value {
-      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-size: clamp(1.8rem, 3.4vw, 3rem);
       font-weight: 700;
       letter-spacing: -0.04em;
     }
 
     .controls {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: 1.3fr auto auto auto;
       gap: 10px;
       align-items: center;
     }
@@ -97,9 +103,7 @@
       font-size: 0.95rem;
     }
 
-    .controls button {
-      cursor: pointer;
-    }
+    .controls button { cursor: pointer; }
 
     .legend {
       display: flex;
@@ -124,18 +128,20 @@
 
     .wall-wrap {
       position: relative;
-      background: linear-gradient(180deg, #151517 0%, #101011 100%);
+      background: linear-gradient(180deg, #141416 0%, #0d0d0e 100%);
       border: 1px solid var(--line);
       border-radius: 24px;
-      padding: 14px;
-      min-height: 72vh;
+      padding: 10px;
+      min-height: 78vh;
       overflow: hidden;
     }
 
     canvas {
       display: block;
       width: 100%;
-      height: min(78vh, 980px);
+      height: calc(100vh - 280px);
+      min-height: 620px;
+      max-height: 1040px;
       border-radius: 18px;
       background: transparent;
       cursor: crosshair;
@@ -145,8 +151,8 @@
       position: absolute;
       pointer-events: none;
       min-width: 220px;
-      max-width: 300px;
-      background: rgba(18, 18, 20, 0.96);
+      max-width: 310px;
+      background: rgba(18, 18, 20, 0.97);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 16px;
       padding: 12px 14px;
@@ -175,44 +181,36 @@
       line-height: 1.45;
     }
 
-    .note {
+    .meta {
       color: var(--muted);
       font-size: 0.9rem;
       line-height: 1.5;
-      margin-top: 8px;
     }
 
     .footer {
       color: var(--muted);
       font-size: 0.86rem;
-      line-height: 1.5;
-      padding-bottom: 8px;
+      line-height: 1.55;
+      padding-bottom: 6px;
     }
 
     .footer code {
-      color: var(--accent);
+      color: #e8e8e8;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
+    a { color: #f1f1f1; }
+
     @media (max-width: 920px) {
-      .controls {
-        grid-template-columns: 1fr 1fr;
-      }
-      .count-card {
-        width: 100%;
-      }
+      .controls { grid-template-columns: 1fr 1fr; }
+      canvas { height: calc(100vh - 360px); min-height: 560px; }
     }
 
     @media (max-width: 640px) {
-      .controls {
-        grid-template-columns: 1fr;
-      }
-      .page {
-        padding: 12px;
-      }
-      .wall-wrap {
-        padding: 10px;
-      }
+      .controls { grid-template-columns: 1fr; }
+      .page { padding: 12px; }
+      .wall-wrap { padding: 8px; min-height: 74vh; }
+      canvas { min-height: 520px; height: calc(100vh - 420px); }
     }
   </style>
 </head>
@@ -222,13 +220,19 @@
       <div>
         <h1>Lives Lost in Gaza</h1>
         <div class="subtitle">
-          Each dot represents one person. Hover over a dot to see the available record.
-          Use search or filters to highlight individual lives within the full scale of loss.
+          Each dot represents one reported fatality. Where a named record is available, hover to see it.
+          Dots without a published named record are shown as unnamed records so the full reported scale remains visible.
         </div>
       </div>
-      <div class="count-card">
-        <div class="count-label">Visible records</div>
-        <div class="count-value" id="countValue">72,000</div>
+      <div class="cards">
+        <div class="count-card">
+          <div class="count-label">Total reported fatalities shown</div>
+          <div class="count-value" id="countValue">Loading…</div>
+        </div>
+        <div class="count-card">
+          <div class="count-label">Named records currently available</div>
+          <div class="count-value" id="namedValue">Loading…</div>
+        </div>
       </div>
     </div>
 
@@ -239,7 +243,7 @@
         <option value="child">Children</option>
         <option value="woman">Women</option>
         <option value="man">Men</option>
-        <option value="unknown">Unknown</option>
+        <option value="unknown">Unknown / unnamed</option>
       </select>
       <select id="sortMode">
         <option value="default">Default order</option>
@@ -253,27 +257,31 @@
       <div class="legend-item"><span class="legend-swatch" style="background: var(--child)"></span> Children</div>
       <div class="legend-item"><span class="legend-swatch" style="background: var(--woman)"></span> Women</div>
       <div class="legend-item"><span class="legend-swatch" style="background: var(--man)"></span> Men</div>
-      <div class="legend-item"><span class="legend-swatch" style="background: var(--unknown)"></span> Unknown</div>
+      <div class="legend-item"><span class="legend-swatch" style="background: var(--unknown)"></span> Unknown / unnamed</div>
       <div class="legend-item"><span class="legend-swatch" style="background: var(--highlight)"></span> Search match / hover</div>
     </div>
 
     <div class="wall-wrap" id="wallWrap">
       <canvas id="wall"></canvas>
       <div id="tooltip" class="tooltip"></div>
-      <div class="note">
-        Tip: this file works immediately with demo data. To use real records, add a file named <code>victims.json</code>
-        in the same folder with an array of objects using fields like <code>name</code>, <code>age</code>, <code>gender</code>, <code>date</code>, and <code>location</code>.
-      </div>
     </div>
 
     <div class="footer">
-      Replace the demo dataset before publishing. After you upload <code>index.html</code> and optionally <code>victims.json</code> to a GitHub Pages repository,
-      your site can be published as a static page.
+      <div id="statusText">Loading data…</div>
+      <div style="margin-top:8px;">
+        This page is configured to fetch named victim records from Tech for Palestine’s <code>killed-in-gaza.min.json</code>
+        and cumulative fatality totals from its <code>casualties_daily.min.json</code> endpoint. If those requests fail,
+        it falls back to a local <code>victims.json</code> file, and finally to demo data.
+      </div>
     </div>
   </div>
 
   <script>
-    const TOTAL_FALLBACK = 72000;
+    const KILLED_URL = 'https://data.techforpalestine.org/api/v3/killed-in-gaza.min.json';
+    const DAILY_URL = 'https://data.techforpalestine.org/api/v2/casualties_daily.min.json';
+    const LOCAL_URL = 'victims.json';
+    const DEMO_TOTAL = 72000;
+
     const canvas = document.getElementById('wall');
     const ctx = canvas.getContext('2d');
     const tooltip = document.getElementById('tooltip');
@@ -283,25 +291,29 @@
     const sortMode = document.getElementById('sortMode');
     const resetBtn = document.getElementById('resetBtn');
     const countValue = document.getElementById('countValue');
+    const namedValue = document.getElementById('namedValue');
+    const statusText = document.getElementById('statusText');
 
     const palette = {
-      child: getCss('--child'),
-      woman: getCss('--woman'),
-      man: getCss('--man'),
-      unknown: getCss('--unknown'),
-      highlight: getCss('--highlight')
+      child: css('--child'),
+      woman: css('--woman'),
+      man: css('--man'),
+      unknown: css('--unknown'),
+      highlight: css('--highlight')
     };
 
     let allRecords = [];
-    let records = [];
+    let visibleRecords = [];
     let points = [];
     let hoveredIndex = -1;
     let dpr = Math.max(1, window.devicePixelRatio || 1);
     let radius = 2;
-    let gap = 2;
+    let gap = 1;
     let columns = 1;
+    let namedCount = 0;
+    let totalCount = 0;
 
-    function getCss(name) {
+    function css(name) {
       return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     }
 
@@ -310,78 +322,183 @@
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
+        .replace(/\"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
 
-    function generateDemoData(total = TOTAL_FALLBACK) {
+    function format(n) {
+      return Number(n || 0).toLocaleString();
+    }
+
+    function inferCategory(age, gender) {
+      const g = String(gender || '').toLowerCase();
+      if (Number.isFinite(age) && age < 18) return 'child';
+      if (g === 'f' || g.includes('female') || g.includes('woman')) return 'woman';
+      if (g === 'm' || g.includes('male') || g.includes('man')) return 'man';
+      return 'unknown';
+    }
+
+    function normalizeTechForPalestineVictims(raw) {
+      if (!Array.isArray(raw) || !raw.length) return [];
+
+      if (Array.isArray(raw[0])) {
+        const fields = raw[0];
+        return raw.slice(1).map((row, idx) => {
+          const obj = Object.fromEntries(fields.map((f, i) => [f, row[i]]));
+          const age = obj.age === '' || obj.age === undefined ? null : Number(obj.age);
+          const category = inferCategory(age, obj.sex);
+          return {
+            id: obj.id || `named-${idx + 1}`,
+            name: obj.en_name || obj.name || 'Unnamed record',
+            name_ar: obj.name || '',
+            age: Number.isFinite(age) ? age : null,
+            gender: obj.sex === 'f' ? 'Female' : obj.sex === 'm' ? 'Male' : 'Unknown',
+            category,
+            date: obj.dob || 'Unknown',
+            location: 'Unknown',
+            note: obj.name ? 'Named record from public victim list.' : 'Public record.',
+            isNamed: true
+          };
+        });
+      }
+
+      return raw.map((obj, idx) => {
+        const age = obj.age === '' || obj.age === undefined ? null : Number(obj.age);
+        const category = inferCategory(age, obj.sex || obj.gender);
+        return {
+          id: obj.id || `named-${idx + 1}`,
+          name: obj.en_name || obj.name || 'Unnamed record',
+          name_ar: obj.name || '',
+          age: Number.isFinite(age) ? age : null,
+          gender: obj.sex === 'f' ? 'Female' : obj.sex === 'm' ? 'Male' : (obj.gender || 'Unknown'),
+          category,
+          date: obj.dob || obj.date || 'Unknown',
+          location: obj.location || 'Unknown',
+          note: 'Named record from public victim list.',
+          isNamed: true
+        };
+      });
+    }
+
+    function normalizeLocalVictims(raw) {
+      return (Array.isArray(raw) ? raw : []).map((obj, idx) => {
+        const age = obj.age === '' || obj.age === undefined ? null : Number(obj.age);
+        const category = obj.category || inferCategory(age, obj.gender || obj.sex);
+        return {
+          id: obj.id || `local-${idx + 1}`,
+          name: obj.name || 'Unnamed record',
+          name_ar: obj.name_ar || '',
+          age: Number.isFinite(age) ? age : null,
+          gender: obj.gender || obj.sex || 'Unknown',
+          category,
+          date: obj.date || 'Unknown',
+          location: obj.location || 'Unknown',
+          note: obj.note || 'Local record.',
+          isNamed: true
+        };
+      });
+    }
+
+    function latestTotalFromDaily(raw) {
+      if (!Array.isArray(raw) || !raw.length) return null;
+      let latest = null;
+      for (const row of raw) {
+        if (!latest) latest = row;
+        else if (String(row.report_date || '') > String(latest.report_date || '')) latest = row;
+      }
+      return latest?.killed_cum ?? latest?.ext_killed_cum ?? null;
+    }
+
+    function buildUnnamedRecords(missing) {
+      const out = [];
+      for (let i = 0; i < missing; i++) {
+        out.push({
+          id: `unnamed-${i + 1}`,
+          name: 'Unnamed record',
+          name_ar: '',
+          age: null,
+          gender: 'Unknown',
+          category: 'unknown',
+          date: 'Unknown',
+          location: 'Unknown',
+          note: 'A reported fatality without a published named record in the public dataset used here.',
+          isNamed: false
+        });
+      }
+      return out;
+    }
+
+    function demoRecords(total = DEMO_TOTAL) {
       const locations = ['Gaza City', 'Khan Younis', 'Rafah', 'Deir al-Balah', 'North Gaza'];
       const dates = ['2023-10-12', '2023-11-07', '2024-01-18', '2024-05-26', '2024-10-03', '2025-03-19', '2025-07-31'];
       const out = [];
-
       for (let i = 0; i < total; i++) {
-        let category;
         const mod = i % 10;
-        if (mod <= 2) category = 'child';
-        else if (mod <= 4) category = 'woman';
-        else if (mod <= 8) category = 'man';
-        else category = 'unknown';
-
+        const category = mod <= 2 ? 'child' : mod <= 4 ? 'woman' : mod <= 8 ? 'man' : 'unknown';
         out.push({
-          id: i + 1,
+          id: `demo-${i + 1}`,
           name: `Record ${i + 1}`,
           age: category === 'child' ? (i % 18) : (18 + (i % 60)),
           gender: category === 'woman' ? 'Female' : category === 'man' ? 'Male' : 'Unknown',
           category,
           date: dates[i % dates.length],
           location: locations[i % locations.length],
-          note: 'Demo record — replace with real sourced data before publishing.'
+          note: 'Demo record — replace with live or local data before publishing.',
+          isNamed: true
         });
       }
       return out;
     }
 
+    async function getJson(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Request failed: ${url}`);
+      return res.json();
+    }
+
     async function loadData() {
       try {
-        const res = await fetch('victims.json', { cache: 'no-store' });
-        if (!res.ok) throw new Error('No victims.json found');
-        const data = await res.json();
-        if (!Array.isArray(data) || !data.length) throw new Error('Invalid victims.json');
-        return data.map((item, idx) => normalizeRecord(item, idx));
-      } catch (err) {
-        return generateDemoData().map((item, idx) => normalizeRecord(item, idx));
+        const [victimRaw, dailyRaw] = await Promise.all([getJson(KILLED_URL), getJson(DAILY_URL)]);
+        const named = normalizeTechForPalestineVictims(victimRaw);
+        const latestTotal = latestTotalFromDaily(dailyRaw);
+        if (!named.length) throw new Error('No named victim records loaded');
+
+        namedCount = named.length;
+        totalCount = Math.max(latestTotal || namedCount, namedCount);
+        const unnamed = buildUnnamedRecords(Math.max(0, totalCount - namedCount));
+        statusText.innerHTML = `Live data loaded. Showing <strong>${format(totalCount)}</strong> reported fatalities, including <strong>${format(namedCount)}</strong> publicly available named records.`;
+        return [...named, ...unnamed];
+      } catch (liveErr) {
+        try {
+          const localRaw = await getJson(LOCAL_URL);
+          const local = normalizeLocalVictims(localRaw);
+          namedCount = local.length;
+          totalCount = local.length;
+          statusText.textContent = 'Live fetch failed, so the page loaded your local victims.json file.';
+          return local;
+        } catch (localErr) {
+          const demo = demoRecords();
+          namedCount = demo.length;
+          totalCount = demo.length;
+          statusText.textContent = 'Live fetch and local file both failed, so demo data is being shown.';
+          return demo;
+        }
       }
     }
 
-    function normalizeRecord(item, idx) {
-      const ageNum = item.age === null || item.age === undefined || item.age === '' ? null : Number(item.age);
-      const rawGender = String(item.gender || item.sex || '').toLowerCase();
-      let category = item.category;
-      if (!category) {
-        if (ageNum !== null && ageNum < 18) category = 'child';
-        else if (rawGender.includes('female') || rawGender.includes('woman')) category = 'woman';
-        else if (rawGender.includes('male') || rawGender.includes('man')) category = 'man';
-        else category = 'unknown';
-      }
-      return {
-        id: item.id || idx + 1,
-        name: item.name || 'Unnamed record',
-        age: Number.isFinite(ageNum) ? ageNum : null,
-        gender: item.gender || item.sex || 'Unknown',
-        category,
-        date: item.date || item.killed_on || 'Unknown',
-        location: item.location || item.governorate || item.place || 'Unknown',
-        note: item.note || item.source_note || ''
-      };
+    function updateCards() {
+      countValue.textContent = format(visibleRecords.length);
+      namedValue.textContent = format(visibleRecords.filter(r => r.isNamed).length);
     }
 
     function applyFilters() {
       const q = searchInput.value.trim().toLowerCase();
       const cat = categoryFilter.value;
+
       let filtered = allRecords.filter(r => {
         const catOk = cat === 'all' || r.category === cat;
-        const text = `${r.name} ${r.location} ${r.date}`.toLowerCase();
-        const qOk = !q || text.includes(q);
+        const searchText = `${r.name} ${r.name_ar || ''} ${r.location} ${r.date}`.toLowerCase();
+        const qOk = !q || searchText.includes(q);
         return catOk && qOk;
       });
 
@@ -391,8 +508,8 @@
         filtered.sort((a, b) => (b.age ?? -1) - (a.age ?? -1));
       }
 
-      records = filtered;
-      countValue.textContent = records.length.toLocaleString();
+      visibleRecords = filtered;
+      updateCards();
       buildPoints();
       draw();
     }
@@ -406,47 +523,40 @@
       ctx.scale(dpr, dpr);
     }
 
+    function fitRadius(total, width, height) {
+      const candidates = [3.4, 3, 2.6, 2.3, 2, 1.8, 1.55, 1.35, 1.15, 1.0, 0.9, 0.8];
+      for (const r of candidates) {
+        const step = r * 2 + 1;
+        const cols = Math.max(1, Math.floor(width / step));
+        const rows = Math.ceil(total / cols);
+        if (rows * step <= height) return { r, cols, step };
+      }
+      const r = 0.75;
+      const step = r * 2 + 1;
+      const cols = Math.max(1, Math.floor(width / step));
+      return { r, cols, step };
+    }
+
     function buildPoints() {
       const width = canvas.getBoundingClientRect().width;
       const height = canvas.getBoundingClientRect().height;
-      const total = records.length || 1;
+      const total = visibleRecords.length || 1;
+      const fit = fitRadius(total, width - 4, height - 4);
 
-      let bestRadius = 2;
-      let bestGap = 2;
-      let bestCols = 1;
-
-      for (let testRadius of [3, 2.5, 2, 1.6, 1.3, 1.1, 0.95]) {
-        const step = testRadius * 2 + 2;
-        const testCols = Math.max(1, Math.floor(width / step));
-        const rows = Math.ceil(total / testCols);
-        if (rows * step <= height) {
-          bestRadius = testRadius;
-          bestGap = 2;
-          bestCols = testCols;
-          break;
-        }
-        bestRadius = testRadius;
-        bestCols = testCols;
-      }
-
-      radius = bestRadius;
-      gap = bestGap;
-      columns = bestCols;
+      radius = fit.r;
+      columns = fit.cols;
+      gap = Math.max(0.6, fit.step - radius * 2);
       const step = radius * 2 + gap;
       const rows = Math.ceil(total / columns);
       const usedWidth = columns * step;
       const usedHeight = rows * step;
-      const startX = Math.max(0, (width - usedWidth) / 2) + radius + 1;
-      const startY = Math.max(0, (height - usedHeight) / 2) + radius + 1;
+      const startX = Math.max(2, (width - usedWidth) / 2) + radius;
+      const startY = Math.max(2, (height - usedHeight) / 2) + radius;
 
-      points = records.map((rec, i) => {
+      points = visibleRecords.map((rec, i) => {
         const col = i % columns;
         const row = Math.floor(i / columns);
-        return {
-          x: startX + col * step,
-          y: startY + row * step,
-          rec
-        };
+        return { x: startX + col * step, y: startY + row * step, rec };
       });
       hoveredIndex = -1;
       hideTooltip();
@@ -455,26 +565,25 @@
     function draw() {
       const width = canvas.getBoundingClientRect().width;
       const height = canvas.getBoundingClientRect().height;
-      ctx.clearRect(0, 0, width, height);
-
       const q = searchInput.value.trim().toLowerCase();
+      ctx.clearRect(0, 0, width, height);
 
       for (let i = 0; i < points.length; i++) {
         const p = points[i];
         const isHovered = i === hoveredIndex;
-        const text = `${p.rec.name} ${p.rec.location} ${p.rec.date}`.toLowerCase();
-        const isSearchHit = !!q && text.includes(q);
+        const searchText = `${p.rec.name} ${p.rec.name_ar || ''} ${p.rec.location} ${p.rec.date}`.toLowerCase();
+        const isSearchHit = !!q && searchText.includes(q);
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fillStyle = isHovered || isSearchHit ? palette.highlight : (palette[p.rec.category] || palette.unknown);
-        ctx.globalAlpha = isHovered ? 1 : (isSearchHit ? 1 : 0.92);
+        ctx.globalAlpha = isHovered ? 1 : (isSearchHit ? 1 : 0.95);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
     }
 
     function findPoint(mx, my) {
-      const hitRadius = Math.max(radius + 1.5, 3.5);
+      const hitRadius = Math.max(radius + 2, 4);
       const hit2 = hitRadius * hitRadius;
       for (let i = 0; i < points.length; i++) {
         const dx = mx - points[i].x;
@@ -488,11 +597,12 @@
       const rec = point.rec;
       tooltip.innerHTML = `
         <div class="name">${escapeHtml(rec.name)}</div>
+        ${rec.name_ar ? `<div class="row"><strong>Arabic:</strong> ${escapeHtml(rec.name_ar)}</div>` : ''}
         <div class="row"><strong>Age:</strong> ${escapeHtml(rec.age ?? 'Unknown')}</div>
         <div class="row"><strong>Gender:</strong> ${escapeHtml(rec.gender)}</div>
-        <div class="row"><strong>Date:</strong> ${escapeHtml(rec.date)}</div>
+        <div class="row"><strong>Date field:</strong> ${escapeHtml(rec.date)}</div>
         <div class="row"><strong>Location:</strong> ${escapeHtml(rec.location)}</div>
-        ${rec.note ? `<div class="row" style="margin-top:6px">${escapeHtml(rec.note)}</div>` : ''}
+        <div class="row" style="margin-top:6px">${escapeHtml(rec.note)}</div>
       `;
 
       const wrapRect = wrap.getBoundingClientRect();
@@ -538,9 +648,9 @@
 
     async function init() {
       allRecords = await loadData();
-      records = [...allRecords];
-      countValue.textContent = records.length.toLocaleString();
+      visibleRecords = [...allRecords];
       setCanvasSize();
+      updateCards();
       buildPoints();
       draw();
 
